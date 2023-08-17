@@ -1,0 +1,66 @@
+.game-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-around;
+    background-color: #a31acb;
+    height: calc(100% - 70px);
+  }
+  
+  .name-input {
+    display: flex;
+    align-items: center;
+  }
+  
+  .counter {
+    text-align: right;
+  }
+  
+
+  .game-field {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+  }
+  
+  .button {
+    width: 180px;
+    height: 60px;
+    background-color: #ff78f0;
+    border-radius: 7px;
+    border: #39b5e0 2px solid;
+    color: #f5ea5a;
+    font-family: "Karla", sans-serif;
+    font-size: 22px;
+  }
+
+  .button {
+    width: 180px;
+    height: 60px;
+    background-color: #ff78f0;
+    border-radius: 7px;
+    border: #39b5e0 2px solid;
+    color: #f5ea5a;
+    font-family: "Karla", sans-serif;
+    font-size: 22px;
+  }
+  .againstComputer-version{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .againstFriend-version {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .start-message {
+    font-size: 40px;
+    color: #f5ea5a;
+    font-family: "Karla", sans-serif;
+  }

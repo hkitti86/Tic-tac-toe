@@ -15,6 +15,9 @@
   
   .counter {
     text-align: right;
+    color: #39b5e0;
+    font-family: "Karla", sans-serif;
+    font-size: 20px;
   }
   
 

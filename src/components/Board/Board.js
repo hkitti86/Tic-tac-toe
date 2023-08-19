@@ -3,7 +3,7 @@ import Square from "../Square/Square";
 import "./styles.css";
 
 const Board = ({squares, onClick}) => (
-<div className="game-field">
+<div className="game-field" >
     {squares.map((square, i) => (
        <Square key={i} value={square} onClick={() => onClick(i)}/> 
     ))}   

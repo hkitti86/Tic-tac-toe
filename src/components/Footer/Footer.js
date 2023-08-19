@@ -7,7 +7,7 @@ export default function Footer(){
     return(
         <div className="footer-container">
             <div className="footer-content">
-            Footer
+            Kitti Horvath, Zürich Switzerland
             </div>
         </div>
     )

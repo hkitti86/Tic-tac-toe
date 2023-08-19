@@ -19,8 +19,9 @@ const Game = () => {
   const [playerName, setPlayerName] = useState("");
   const [gameInProgress, setGameInProgress] = useState(false); 
   const [inGame, setInGame] = useState(false);
-
-
+  const [playerNameX, setPlayerNameX] = useState("");
+  const [playerNameO, setPlayerNameO] = useState("");
+  const [isBoardHasEmptySquare, setBoardHasEmptySquare] = useState(true);
 
   const winner = calculateWinner(board);
 
@@ -37,45 +38,71 @@ const Game = () => {
     const boardClone = [...board];
     boardClone[computerMove] = "O";
     setBoard(boardClone);
+
+    checkResult(boardClone);
+
     setXisNext(true);
     setIsComputerTurn(false);
   };
 
+  const checkResult = (boardClone) => {
+    if (isBoardHasEmptySquare) {
+      const newWinner = calculateWinner(boardClone);
+      if (newWinner) {
+        if (newWinner === "X") {
+          setXWins(xWins + 1);
+        } else {
+          setOWins(oWins + 1);
+        }
+      } else if (!boardClone.includes(null)) {
+        setTies(ties + 1);
+        setBoardHasEmptySquare(false);
+      }
+    }
+  }
+
   const handleBackButtonClick = () => {
     setGameInProgress(false);
+    setInGame(false);
     setIsPlayAgainstComputerVisible(true);
     setIsPlayWithFriendVisible(true);
     setIsNewGameComputerVisible(false);
     setIsNewGameFriendVisible(false);
     setPlayerName("");
+    setPlayerNameO("");
+    setPlayerNameX("");
+    setXWins(0);
+    setOWins(0);
+    setTies(0);
     setBoard(Array(9).fill(null));
-    setInGame(false); // Add this line
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // either singleplayer or multiplayer
+    if(playerName || (playerNameX && playerNameO)) {
+      setGameInProgress(true);
+    }
   };
 
   const handleClick = (i) => {
-    const boardClone = [...board];
-    if (winner || boardClone[i]) return;
-  
-    boardClone[i] = xIsNext ? "X" : "O";
-    setBoard(boardClone);
-    setXisNext(!xIsNext);
-  
-    const newWinner = calculateWinner(boardClone);
-    if (newWinner) {
-      if (newWinner === "X") {
-        setXWins(xWins + 1);
-      } else {
-        setOWins(oWins + 1);
-      }
-    } else if (!boardClone.includes(null)) {
-      setTies(ties + 1);
+    if (gameInProgress) {
+      const boardClone = [...board];
+      if (winner || boardClone[i]) return;
+    
+      boardClone[i] = xIsNext ? "X" : "O";
+      setBoard(boardClone);
+      setXisNext(!xIsNext);
+    
+      checkResult(boardClone);
+    
+      setIsComputerTurn(true);
+      
     }
-  
-    setIsComputerTurn(true);
   };
 
   useEffect(() => {
-    if (!xIsNext && isPlayingAgainstComputer && !winner) {
+    if (!xIsNext && isPlayingAgainstComputer && !winner && gameInProgress) {
       const timer = setTimeout(() => {
         makeComputerMove();
       }, 500);
@@ -85,13 +112,12 @@ const Game = () => {
   }, [xIsNext, isPlayingAgainstComputer, winner, board]);
 
   const handlePlayAgainstComputerClick = () => {
+    setBoardHasEmptySquare(true);
     setIsPlayingAgainstComputer(true);
     setIsNewGameComputerVisible(true);
     setIsPlayAgainstComputerVisible(false);
     setIsPlayWithFriendVisible(false);
     setShowStartMessage(false); // Hide the start message
-    setGameInProgress(true);
-    // Only set the player's name if it's not already set
     if (!playerName) {
       setPlayerName(""); // Clear the player's name
     }
@@ -99,10 +125,9 @@ const Game = () => {
     setXisNext(true);
     setInGame(true); 
   };
-  
-  
 
   const handlePlayWithFriendClick = () => {
+    setBoardHasEmptySquare(true);
     setIsNewGameFriendVisible(true);
     setShowStartMessage(true);
     setIsPlayingAgainstComputer(false);
@@ -110,6 +135,7 @@ const Game = () => {
     setIsPlayWithFriendVisible(false);
     setBoard(Array(9).fill(null));
     setXisNext(true);
+    setInGame(true); 
   };
 
 
@@ -127,17 +153,22 @@ const Game = () => {
         <div className="againstComputer-version">
           <div className="name-input">
             { setPlayerName && (
-            <input 
-              type="text"
-              placeholder="Enter your name"
-              value={playerName}
-              onChange={(e) => setPlayerName(e.target.value)}
+            <form onSubmit={handleSubmit}>
+      
+          {!gameInProgress && (<input 
+            type="text"
+            placeholder="Enter O's name"
+            value={playerName}
+            onChange={(e) => setPlayerName(e.target.value)}
           />)}
+          {!gameInProgress && (<button type="submit">Submit</button>)}
+          </form>
+          )}
         </div>
           <div className="counter">
-            <p>{playerName}(X): {xWins} || Tie: {ties} || Computer(O): {oWins}</p>
+            <p>{playerName}(X): {xWins}   ||   Tie: {ties}   ||    Computer(O): {oWins}</p>
           </div>
-          <p className="start-message">Click on a cell to start the game!</p>
+          <p className="start-message">Let's play!</p>
           <button className="button" onClick={handlePlayAgainstComputerClick}>
             New Game
           </button>
@@ -150,25 +181,47 @@ const Game = () => {
       )}
       {isNewGameFriendVisible && (
         <div className="againstFriend-version">
-          <div className="counter">
-          <p>Player(X): {xWins} || Tie: {ties} || Computer(O): {oWins}</p>
-          </div>
-          <p className="start-message">Click on a cell to start the game!</p>
+          <div className="name-input">
+          { setPlayerNameO && setPlayerNameX && (
+            <form onSubmit={handleSubmit}>
+          {!gameInProgress && (<input 
+            type="text"
+            placeholder="Enter X's name"
+            value={playerNameX}
+            onChange={(e) => setPlayerNameX(e.target.value)}
+            />)}
+          {!gameInProgress && (<input 
+            type="text"
+            placeholder="Enter O's name"
+            value={playerNameO}
+            onChange={(e) => setPlayerNameO(e.target.value)}
+          />)}
+          {!gameInProgress && (<button type="submit">Submit</button>)}
+        
+          </form>
+      )}  
         </div>
+
+        <div className="counter">
+          <p>{playerNameX}(X): {xWins}   ||   Tie: {ties}   ||    {playerNameO}(O): {oWins}</p>
+        </div>
+
+          <p className="start-message">Let's play!</p>
+          <button className="button" onClick={handlePlayWithFriendClick}>
+            New Game
+          </button>
+        </div>
+        
       )}
       {inGame && (
-        <button className="button" onClick={() => setInGame(false)}>
+        <button className="button" onClick={() => handleBackButtonClick()}>
          Back to Main Menu
         </button>
 )}
     </div>
 
   );
-  <div>
-    <button className="button" onClick={handlePlayWithFriendClick}>
-            New Game
-    </button>
-  </div>
+
 };
 
 export default Game;
